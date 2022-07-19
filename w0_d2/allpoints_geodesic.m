@@ -1,6 +1,6 @@
 
 % Load in mesh
-[V,F] = readOBJ('sphere.obj');
+[V,F] = readOBJ('spot_mini.obj');
 
 % Get the number of verticies
 N = length(V);
@@ -22,6 +22,6 @@ cvx_begin
     f(E(:,2), :) - f(E(:, 1), :) <= repmat(L, 1, N)
 cvx_end
 
-tsurf(F, V, 'CData', f(1, :));
+tsurf(F, V, 'CData', f(2, :));
 shading interp;
 axis off;
