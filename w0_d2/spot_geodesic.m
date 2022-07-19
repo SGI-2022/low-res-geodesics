@@ -1,6 +1,6 @@
 
 % Load in mesh
-[V,F] = readOBJ('spot.obj');
+[V,F] = readOBJ('sphere.obj');
 
 % Get the number of verticies
 N = length(V);
@@ -9,9 +9,8 @@ N = length(V);
 E = edges(F);
 
 % Compute the length of each edge
-L = V(E(:,1)) - V(E(:,2));
-
-f = zeros(N, N);
+L = V(E(:,1), :) - V(E(:,2), :);
+L = sqrt(sum(L.^2, 2));
 
 % OPTIMIZE
 cvx_begin
@@ -19,9 +18,10 @@ cvx_begin
   maximize( sum(sum( f )))
   subject to
     diag(f) == 0
+    f(E(:,1), :) - f(E(:, 2), :) <= repmat(L, 1, N)
     f(E(:,2), :) - f(E(:, 1), :) <= repmat(L, 1, N)
-%     for k=1:N
-%       f(E(:,1), k) - f(E(:,2), k) <= L(:)
-%       % f(E(:,2), k) - f(E(:,1), k) <= L
-%     end
 cvx_end
+
+tsurf(F, V, 'CData', f(1, :));
+shading interp;
+axis off;
