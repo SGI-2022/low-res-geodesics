@@ -1,6 +1,9 @@
 
 % Load in mesh
-[V,F] = readOBJ('spot_mini.obj');
+[V,F] = readOBJ('sphere.obj');
+
+% Swap forward axis
+V = [V(:,1), V(:,3), V(:,2)];
 
 % Get the number of verticies
 N = length(V);
@@ -22,6 +25,4 @@ cvx_begin
     f(E(:,2), :) - f(E(:, 1), :) <= repmat(L, 1, N)
 cvx_end
 
-tsurf(F, V, 'CData', f(2, :));
-shading interp;
-axis off;
+render_distance(V, F, f(1,:))

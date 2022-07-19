@@ -26,6 +26,4 @@ cvx_begin
     norm(G*f) <= 1
 cvx_end
 
-tsurf(F, V, 'CData', f);
-shading interp;
-axis off;
+render_distance(V, F, f)
