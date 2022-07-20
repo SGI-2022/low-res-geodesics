@@ -16,10 +16,17 @@ G = grad(V, F);
 % OPTIMIZE
 cvx_begin
   variable f(N, N)
-  maximize( sum(sum( f )))
+  maximize( sum(sum( f )) )
   subject to
     diag(f) == 0
-    norms(G*f, 2, 2) <= 1
+    norms(reshape(G*f, length(F), 3, N), 2, 3) <= 1
 cvx_end
 
 render_distance(V, F, f(25,:))
+hold on;
+
+D = G*f;
+D = reshape(D, length(F), 3, N);
+D = D(:, :, 25);
+B = barycenter(V, F);
+quiver3(B(:, 1), B(:, 2), B(:, 3), D(:, 1), D(:, 2), D(:, 3), 0)

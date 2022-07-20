@@ -22,7 +22,7 @@ cvx_begin
   maximize( sum( f ) )
   subject to
     f(S) <= 0
-    norm(G*f) <= 1
+    norms(reshape(G*f, length(F), 3), 2, 2) <= 1
 cvx_end
 
 render_distance(V, F, f)
