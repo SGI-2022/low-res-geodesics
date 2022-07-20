@@ -1,5 +1,10 @@
+% Calculates geodesic distance to the boundary of a mesh using the gradient.
+
 % Load in mesh
-[V,F] = readOBJ('sphere.obj');
+[V,F] = readOBJ('monkey.obj');
+
+% Swap axes
+V = [V(:,1), V(:,3), V(:,2)];
 
 % Get the number of verticies
 N = length(V);
@@ -7,12 +12,6 @@ N = length(V);
 % Compute the boundary verticies
 O = outline(F);
 B = unique(O(:));
-
-% Get the number of verticies in the boundary
-NB = length(B);
-
-% Compute intenior verticies
-I = setdiff(1:N, B);
 
 % Compute the gradient
 G = grad(V, F);
