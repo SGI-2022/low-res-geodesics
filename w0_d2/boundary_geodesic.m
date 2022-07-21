@@ -16,10 +16,13 @@ B = unique(O(:));
 % Compute the gradient
 G = grad(V, F);
 
+% Compute the mass matrix
+M = massmatrix(V, F);
+
 % Find a geodesic to a point on the boundary
 cvx_begin
   variable f(N)
-  maximize( sum( f ) )
+  maximize( sum( M * f ) )
   subject to
     f(B) <= 0
     % norms(G*f, 2, 2) <= 1 [Tri, 3]
