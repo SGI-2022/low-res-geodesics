@@ -1,4 +1,4 @@
-function d = solve_sparse_geodesic(V, F, S, E)
+function c = solve_sparse_geodesic(V, F, S, E)
 
 % Get the number of verticies
 N = length(V);
@@ -8,13 +8,13 @@ G = grad(V, F);
 
 % Find a geodesic to a point on the boundary
 cvx_begin
-  variable d(N)
-  variable C(size(E,2))
-  maximize( sum( d ) )
+  variable c(size(E, 2))
+  variable D(N)
+  maximize( sum( D ) )
   subject to
-    d(S) <= 0
-    norms(reshape(G*d, length(F), 3), 2, 2) <= 1
-   % d==E(:, 1:size(E,2))*C
+    D(S) <= 0
+    norms(reshape(G*D, length(F), 3), 2, 2) <= 1
+    D == E * c
     % TODO: Require this to be in a specific basis
 cvx_end
 
