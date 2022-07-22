@@ -26,7 +26,7 @@ function ProjectedDistance = pairwise_projected_constraint_geodesic(Verts, Faces
     % Let the geodesic distance take verticies to the real numbers
     variable Distance(NumVerts, NumVerts)
 
-    variable ProjectedDistance(NumBasisVectors, NumVerts)
+    variable ProjectedDistance(NumBasisVectors, NumBasisVectors)
     
     % Maximize the integral of geodesic distance over all verticies
     maximize( sum(sum(Distance) )) 
@@ -46,7 +46,7 @@ function ProjectedDistance = pairwise_projected_constraint_geodesic(Verts, Faces
       norms(reshape(Gradient*Distance, NumFaces, Dimension, NumVerts), 2, 3) <= 1
 
       % Require the distance to be a linear combination of the basis
-      Distance == Basis * ProjectedDistance
+      Distance == Basis * ProjectedDistance * Basis.'
   cvx_end
 
 end

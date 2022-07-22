@@ -24,7 +24,7 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
 
   cvx_begin
 
-    variable ProjectedDistance(NumBasisVectors, NumVerts)
+    variable ProjectedDistance(NumBasisVectors, NumBasisVectors) symetric
     
     % Maximize the integral of geodesic distance over all verticies
     maximize( sum(sum(Basis.*ProjectedDistance) )) 
@@ -33,7 +33,7 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
     subject to
 
       % The distance to the target set from the target set should be zero
-      diag(Basis*ProjectedDistance) <= 0
+      diag(Basis*ProjectedDistance*Basis.') <= 0
 
       % Constrain the gradient of distance to be less than 1
       % Basically: |ΔD| <= 1
@@ -41,7 +41,7 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
       % makes it behave like a tensor product which spits out a vector 
       % for each face. Then we take the norm of that vector, and this is
       % the quantityt we want to restict to be less than 1.
-      norms(reshape(Gradient*Basis*ProjectedDistance, NumFaces, Dimension, NumVerts), 2, 3) <= 1
+      norms(reshape(Gradient*Basis*ProjectedDistance*Basis.', NumFaces, Dimension, NumVerts), 2, 3) <= 1
   cvx_end
 
 end
