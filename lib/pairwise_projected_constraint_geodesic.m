@@ -17,10 +17,10 @@ function ProjectedDistance = pairwise_projected_constraint_geodesic(Verts, Faces
   NumFaces = size(Faces, 1);
 
   % Get the size of the basis
-  NumBasisVectors = size(E, 2);
+  NumBasisVectors = size(Basis, 2);
 
   % Compute the gradient matrix for the mesh
-  Gradient = grad(V, F);
+  Gradient = grad(Verts, Faces);
 
   cvx_begin
     % Let the geodesic distance take verticies to the real numbers
@@ -43,7 +43,7 @@ function ProjectedDistance = pairwise_projected_constraint_geodesic(Verts, Faces
       % makes it behave like a tensor product which spits out a vector 
       % for each face. Then we take the norm of that vector, and this is
       % the quantityt we want to restict to be less than 1.
-      norms(reshape(Gradient*Distance, NumFaces, Dimension, NumVerts), 2, 3) <= 1
+      norms(reshape(Gradient*Distance, NumFaces, Dimension, NumVerts), 2, 2) <= 1
 
       % Require the distance to be a linear combination of the basis
       Distance == Basis * ProjectedDistance * Basis.'
