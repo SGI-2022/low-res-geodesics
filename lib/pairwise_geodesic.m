@@ -17,7 +17,7 @@ function Distance = pairwise_geodesic(Verts, Faces)
   NumFaces = size(Faces, 1);
 
   % Compute the gradient matrix for the mesh
-  Gradient = grad(V, F);
+  Gradient = grad(Verts, Faces);
 
   cvx_begin
     % Let the geodesic distance take all pairs of verticies to the real numbers
