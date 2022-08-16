@@ -61,3 +61,6 @@ codegen/
 octave-workspace
 w0_d4/solve_sparse_geodesic.m
 w0_d4/main.m
+
+# Dont track saved distances
+saves/
