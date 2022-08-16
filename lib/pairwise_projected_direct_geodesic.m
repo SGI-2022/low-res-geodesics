@@ -1,4 +1,4 @@
-function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Basis)
+function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Basis, NumFaceSamples)
   % Computes the geodesic distance between all pairs of verticies, with 
   % geodesic paths not restricted to edges, and projected to a given 
   % orthonormal basis.
@@ -42,10 +42,10 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
       % for each face. Then we take the norm of that vector, and this is
       % the quantity we want to restict to be less than 1.
       A=Gradient*Basis*ProjectedDistance*Basis.'
-      sample=[randperm(NumFaces, 15)];
+      sample=[randperm(NumFaces, NumFaceSamples)];
       sample1 = [sample, sample+NumFaces, sample+ 2*NumFaces]
       size(A(sample1, :)) 
-      norms(reshape(A(sample1, :), 15, Dimension, NumVerts), 2, 2) <= 1
+      norms(reshape(A(sample1, :), NumFaceSamples, Dimension, NumVerts), 2, 2) <= 1
   cvx_end
 
 end
