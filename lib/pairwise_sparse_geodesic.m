@@ -1,4 +1,4 @@
-function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Basis)
+function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Basis, NumVertSamples, NumFaceSamples)
   % Computes the geodesic distance between all pairs of verticies, with 
   % geodesic paths not restricted to edges, and projected to a given 
   % orthonormal basis.
@@ -20,28 +20,36 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
   NumBasisVectors = size(Basis, 2);
 
   % Compute the gradient matrix for the mesh
-  Gradient = grad(Verts, Faces);
+  Gradient = grad(Verts, Faces);  
+
+  VertSamples = randperm(NumVerts, NumVertSamples);
+  MiniBasis = Basis(VertSamples, :);
 
   cvx_begin
 
     variable ProjectedDistance(NumBasisVectors, NumBasisVectors) symmetric
+
+    D = MiniBasis*ProjectedDistance*MiniBasis.';
     
     % Maximize the integral of geodesic distance over all verticies
-    maximize( sum(sum(Basis*ProjectedDistance*Basis.') )) 
+    maximize( sum(sum( D ) ))
 
     % With the following constraints
     subject to
 
       % The distance to the target set from the target set should be zero
-      diag(Basis*ProjectedDistance*Basis.') <= 0
+      diag(ProjectedDistance) <= 0
 
       % Constrain the gradient of distance to be less than 1
       % Basically: |ΔD| <= 1
       % Note: Gradient is really a tensor, and this call to reshape is
       % makes it behave like a tensor product which spits out a vector 
       % for each face. Then we take the norm of that vector, and this is
-      % the quantityt we want to restict to be less than 1.
-      norms(reshape(Gradient*Basis*ProjectedDistance*Basis.', NumFaces, Dimension, NumVerts), 2, 2) <= 1
+      % the quantity we want to restict to be less than 1.
+      FaceSamples=[randperm(NumFaces, NumFaceSamples)];
+      GradientSamples = [ FaceSamples, FaceSamples + NumFaces, FaceSamples + 2*NumFaces ];
+      G = Gradient(GradientSamples, VertSamples);
+      norms(reshape(G*D, NumFaceSamples, Dimension, NumVertSamples), 2, 2) <= 1
   cvx_end
 
 end

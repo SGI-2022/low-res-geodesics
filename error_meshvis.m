@@ -10,14 +10,15 @@ Verts = [Verts(:,1), Verts(:,3), Verts(:,2)];
 Basis = laplacian_eigenbasis(Verts, Faces, 50);
 
 % Select some target verticies
-TargetVerts = randi(size(Verts, 1), 20, 1);
+NumTargetVerts = 1;
+TargetVerts = randi(size(Verts, 1), NumTargetVerts, 1);
 
-% Compute the ground truth geodesic distance
-GroundTruthDistance = geodesic(Verts, Faces, TargetVerts);
+ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 300, 100);
+Distance = Basis * ProjectedDistance * Basis.';
 
-ProjectedDistance = projected_direct_geodesic(Verts, Faces, TargetVerts, Basis);
+save_geodesic('spot', 'pairwise_projected', Distance);
 
-Error = abs((Basis*ProjectedDistance) - GroundTruthDistance) ./ abs(GroundTruthDistance);
-Error(TargetVerts) = 0;
+% Error = abs(Distance - GroundTruthDistance) ./ abs(GroundTruthDistance);
+% Error(TargetVerts) = 0;
 
-render_distance_function(Verts, Faces, Error, TargetVerts);
+render_distance_function(Verts, Faces, Distance(TargetVerts, :), TargetVerts);
