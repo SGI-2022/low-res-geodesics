@@ -40,8 +40,12 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
       % Note: Gradient is really a tensor, and this call to reshape is
       % makes it behave like a tensor product which spits out a vector 
       % for each face. Then we take the norm of that vector, and this is
-      % the quantityt we want to restict to be less than 1.
-      norms(reshape(Gradient*Basis*ProjectedDistance*Basis.', NumFaces, Dimension, NumVerts), 2, 2) <= 1
+      % the quantity we want to restict to be less than 1.
+      A=Gradient*Basis*ProjectedDistance*Basis.'
+      sample=[randperm(NumFaces, 15)];
+      sample1 = [sample, sample+NumFaces, sample+ 2*NumFaces]
+      size(A(sample1, :)) 
+      norms(reshape(A(sample1, :), 15, Dimension, NumVerts), 2, 2) <= 1
   cvx_end
 
 end
