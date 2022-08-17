@@ -38,7 +38,7 @@ function Distance = pairwise_geodesic(Verts, Faces)
       % makes it behave like a tensor product which spits out a vector 
       % for each face. Then we take the norm of that vector, and this is
       % the quantityt we want to restict to be less than 1.
-      norms(reshape(Gradient*Distance, NumFaces, Dimension, NumVerts), 2, 3) <= 1
+      norms(reshape(Gradient*Distance, NumFaces, Dimension, NumVerts), 2, 2) <= 1
   cvx_end
 
 end
