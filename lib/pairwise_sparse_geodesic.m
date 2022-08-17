@@ -39,16 +39,20 @@ function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVe
     variable ProjectedDistance(NumBasisVectors, NumBasisVectors) symmetric
     
     % Maximize the integral of geodesic distance over all verticies
-    maximize( sum (dot( ProjectedDistance, S )) )
+    maximize( sum(sum( ProjectedDistance .* S )) ) 
+    % According to the following, this is the most efficent way to do this
+    % https://stackoverflow.com/questions/8031628/octave-matlab-efficient-calc-of-frobenius-inner-product
 
     % With the following constraints
     subject to
 
       % The distance to the target set from the target set should be zero
       % Note: Should be more efficent than `diag` for large matricies
-      for i = 1:NumVerts
-        Basis(i,:)*ProjectedDistance*Basis(i,:).' <= 0
-      end
+      % for i = 1:NumVerts
+      %   Basis(i,:)*ProjectedDistance*Basis(i,:).' <= 0
+      % end
+      sum(Basis*ProjectedDistance.*Basis, 2) <= 0 
+      % See https://www.mathworks.com/matlabcentral/answers/31864-calculating-diagonal-elements-of-a-matrix-product-without-a-loop-or-redundant-calculations
 
       % Constrain the gradient of distance to be less than 1
       % Basically: |ΔD| <= 1
