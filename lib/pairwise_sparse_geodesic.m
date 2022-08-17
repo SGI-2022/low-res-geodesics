@@ -1,4 +1,4 @@
-function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Basis, NumVertSamples, NumFaceSamples)
+function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVertSamples, NumFaceSamples)
   % Computes the geodesic distance between all pairs of verticies, with 
   % geodesic paths not restricted to edges, and projected to a given 
   % orthonormal basis.
@@ -19,26 +19,36 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
   % Get the size of the basis
   NumBasisVectors = size(Basis, 2);
 
-  % Compute the gradient matrix for the mesh
-  Gradient = grad(Verts, Faces);  
-
+  % Sample a random number of faces.
+  FaceSamples = randperm(NumFaces, NumFaceSamples);
   VertSamples = randperm(NumVerts, NumVertSamples);
+
+  % Precompute the gradient matrix for the mesh
+  Gradient = grad(Verts, Faces);  
+  GradientSamples = [ FaceSamples, FaceSamples + NumFaces, FaceSamples + 2*NumFaces ];
+  MiniGrad = Gradient(GradientSamples, VertSamples);
+
   MiniBasis = Basis(VertSamples, :);
+
+  % Precompute the summation matrix
+  OneVec = ones(NumVerts);
+  S = (Basis.' * OneVec) * (OneVec.' * Basis);
 
   cvx_begin
 
     variable ProjectedDistance(NumBasisVectors, NumBasisVectors) symmetric
-
-    D = MiniBasis*ProjectedDistance*MiniBasis.';
     
     % Maximize the integral of geodesic distance over all verticies
-    maximize( sum(sum( D ) ))
+    maximize( trace( ProjectedDistance * S ) )
 
     % With the following constraints
     subject to
 
       % The distance to the target set from the target set should be zero
-      diag(ProjectedDistance) <= 0
+      % Note: Should be more efficent than `diag` for large matricies
+      for i = 1:NumVerts
+        Basis(i,:)*ProjectedDistance*Basis(i,:).' <= 0
+      end
 
       % Constrain the gradient of distance to be less than 1
       % Basically: |ΔD| <= 1
@@ -46,10 +56,8 @@ function ProjectedDistance = pairwise_projected_direct_geodesic(Verts, Faces, Ba
       % makes it behave like a tensor product which spits out a vector 
       % for each face. Then we take the norm of that vector, and this is
       % the quantity we want to restict to be less than 1.
-      FaceSamples=[randperm(NumFaces, NumFaceSamples)];
-      GradientSamples = [ FaceSamples, FaceSamples + NumFaces, FaceSamples + 2*NumFaces ];
-      G = Gradient(GradientSamples, VertSamples);
-      norms(reshape(G*D, NumFaceSamples, Dimension, NumVertSamples), 2, 2) <= 1
+      MiniDist = MiniBasis*ProjectedDistance*MiniBasis.';
+      norms(reshape(MiniGrad*MiniDist, NumFaceSamples, Dimension, NumVertSamples), 2, 2) <= 1
   cvx_end
 
 end
