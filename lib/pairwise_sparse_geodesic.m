@@ -39,7 +39,7 @@ function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVe
     variable ProjectedDistance(NumBasisVectors, NumBasisVectors) symmetric
     
     % Maximize the integral of geodesic distance over all verticies
-    maximize( trace( ProjectedDistance * S ) )
+    maximize( sum (dot( ProjectedDistance, S )) )
 
     % With the following constraints
     subject to
