@@ -1,5 +1,5 @@
 
-NumFaceSteps = 5;
+NumFaceSteps = 7;
 FacesStepSize = 10;
 
 NumBasisSteps = 5;
@@ -25,18 +25,18 @@ MeanError = zeros(NumFaceSteps, NumBasisSteps);
 for FaceStep = 1:NumFaceSteps
   for BasisStep = 1:NumBasisSteps
     
-    %Basis = FullBasis(:, 1:BasisStep*BasisStepSize);
-    %ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 130, FaceStep * FacesStepSize);
-    %AproxDistance = Basis(:, :) * ProjectedDistance * Basis(TargetVerts, :).';
+    Basis = FullBasis(:, 1:BasisStep*BasisStepSize);
+    ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 130, FaceStep * FacesStepSize);
+    AproxDistance = Basis(:, :) * ProjectedDistance * Basis(TargetVerts, :).';
 
     Method = strcat('heatmap', string(FaceStep), '-', string(BasisStep));
-    AproxDistance = load_geodesic('spot_mini', Method);
+    save_geodesic('spot_mini', Method, AproxDistance);
 
     % Drop the distance at the target vert, it won't worth with relitive
     % error
     PinpointGroundTruthDistance = GroundTruthDistance(1:end ~= TargetVerts);
     PinpointAproxDistance = AproxDistance(1:end ~= TargetVerts);
-    ErrorVec = abs((PinpointGroundTruthDistance - PinpointAproxDistance));
+    ErrorVec = abs((PinpointGroundTruthDistance - PinpointAproxDistance) ./ PinpointGroundTruthDistance);
     MeanError(FaceStep, BasisStep) = sum(ErrorVec) / size(Verts, 1);
   end
 end
