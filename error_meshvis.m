@@ -7,7 +7,7 @@
 Verts = [Verts(:,1), Verts(:,3), Verts(:,2)];
 
 % Compute a basis on the mesh
-Basis = laplacian_eigenbasis(Verts, Faces, 50);
+Basis = laplacian_eigenbasis(Verts, Faces, 30);
 
 NumVertSamples=100;
 NumFaceSamples=50;
@@ -16,7 +16,11 @@ NumEigenvectors=10;
 NumTargetVerts = 1;
 TargetVerts = randi(size(Verts, 1), NumTargetVerts, NumEigenvectors);
 
+<<<<<<< Updated upstream
 ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVertSamples, NumFaceSamples);
+=======
+ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 30, 30);
+>>>>>>> Stashed changes
 Distance = Basis * ProjectedDistance * Basis.';
 
 save_geodesic('spot', 'pairwise_projected', Distance);
