@@ -20,19 +20,20 @@ TargetVerts = 1;
 % Compute the ground truth geodesic distance
 GroundTruthDistance = geodesic(Verts, Faces, TargetVerts);
 
-Error = zeros(NumFaceSteps, NumBasisSteps);
+MeanError = zeros(NumFaceSteps, NumBasisSteps);
 
 for FaceStep = 1:NumFaceSteps
   for BasisStep = 1:NumBasisSteps
     
     Basis = FullBasis(:, 1:BasisStep*BasisStepSize);
-    ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 20, FaceStep * FacesStepSize);
-    AproxDistance = Basis * ProjectedDistance * Basis.';
+    ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 100, FaceStep * FacesStepSize);
+    AproxDistance = Basis(:, :) * ProjectedDistance * Basis(TargetVerts, :).';
 
     % Drop the distance at the target vert, it won't worth with relitive
     % error
     PinpointGroundTruthDistance = GroundTruthDistance(1:end ~= TargetVerts);
     PinpointAproxDistance = AproxDistance(1:end ~= TargetVerts);
-    Error(FaceStep, BasisStep) = sum(abs((PinpointGroundTruthDistance - PinpointAproxDistance) / PinpointGroundTruthDistance));
+    ErrorVec = abs((PinpointGroundTruthDistance - PinpointAproxDistance) ./ PinpointGroundTruthDistance);
+    MeanError(FaceStep, BasisStep) = sum(ErrorVec) / size(Verts, 1);
   end
 end
