@@ -47,21 +47,21 @@ function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVe
     subject to
 
       % Smart/stupid extra constraint idea: Enforce the triangle inequality
-      for i = 1:NumVertSamples
-        for j = (i+1):NumVertSamples
-          u = VertSamples(i);
-          v = VertSamples(j);
-          n = VertSamples([1:i i:j j:end]);
-          % Calculate distance from u to every other sample point
-          UDist = Basis(u, :)*ProjectedDistance*Basis(n, :).';
-          % Calculate distance from v to every other sample point
-          VDist = Basis(v, :)*ProjectedDistance*Basis(n, :).';
-          % Calculate the current distance between u and v
-          UVDist = Basis(u, :)*ProjectedDistance*Basis(v, :).';
-          % Bound that distance with the Triangle Inequality
-          UVDist <= UDist + VDist;
-        end
-      end
+%       for i = 1:NumVertSamples
+%         for j = (i+1):NumVertSamples
+%           u = VertSamples(i);
+%           v = VertSamples(j);
+%           n = VertSamples([1:i i:j j:end]);
+%           % Calculate distance from u to every other sample point
+%           UDist = Basis(u, :)*ProjectedDistance*Basis(n, :).';
+%           % Calculate distance from v to every other sample point
+%           VDist = Basis(v, :)*ProjectedDistance*Basis(n, :).';
+%           % Calculate the current distance between u and v
+%           UVDist = Basis(u, :)*ProjectedDistance*Basis(v, :).';
+%           % Bound that distance with the Triangle Inequality
+%           UVDist <= UDist + VDist;
+%         end
+%       end
 
       % The distance to the target set from the target set should be zero
       % Note: Should be more efficent than `diag` for large matricies
