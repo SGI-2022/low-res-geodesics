@@ -26,9 +26,6 @@ function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVe
   % Precompute the gradient matrix for the mesh
   Gradient = grad(Verts, Faces);  
   GradientSamples = [ FaceSamples, FaceSamples + NumFaces, FaceSamples + 2*NumFaces ];
-  MiniGrad = Gradient(GradientSamples, VertSamples);
-
-  MiniBasis = Basis(VertSamples, :);
 
   % Precompute the summation matrix
   OneVec = ones(NumVerts);
@@ -77,8 +74,8 @@ function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVe
       % makes it behave like a tensor product which spits out a vector 
       % for each face. Then we take the norm of that vector, and this is
       % the quantity we want to restict to be less than 1.
-      MiniDist = MiniBasis*ProjectedDistance*MiniBasis.';
-      norms(reshape(MiniGrad*MiniDist, NumFaceSamples, Dimension, NumVertSamples), 2, 2) <= 1
+      DistGrad = (Gradient(GradientSamples, :) * Basis) * (ProjectedDistance * Basis(VertSamples, :).');
+      norms(reshape(DistGrad, NumFaceSamples, Dimension, NumVertSamples), 2, 2) <= 1
   cvx_end
 
 end

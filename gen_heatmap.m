@@ -6,7 +6,7 @@ NumBasisSteps = 10;
 BasisStepSize = 5;
 
 % Load in mesh
-[Verts, Faces] = readOBJ('data/spot_mini.obj');
+[Verts, Faces] = readOBJ('data/spot_mini_josue.obj');
 
 % Swap forward axis
 Verts = [Verts(:,1), Verts(:,3), Verts(:,2)];
@@ -14,11 +14,11 @@ Verts = [Verts(:,1), Verts(:,3), Verts(:,2)];
 % Compute a basis on the mesh
 FullBasis = laplacian_eigenbasis(Verts, Faces, NumBasisSteps * BasisStepSize);
 
-% Select some target vertices
-TargetVerts = 1;
+% Select some target verticies
+TargetVert = 1;
 
 % Compute the ground truth geodesic distance
-GroundTruthDistance = geodesic(Verts, Faces, TargetVerts);
+GroundTruthDistance = readmatrix('spot_mini_pairwise.csv');
 
 MeanError = zeros(NumFaceSteps, NumBasisSteps);
 
@@ -27,15 +27,16 @@ for FaceStep = 1:NumFaceSteps
     
     Basis = FullBasis(:, 1:BasisStep*BasisStepSize);
     ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 130, FaceStep * FacesStepSize);
-    ApproxDistance = Basis(:, :) * ProjectedDistance * Basis(TargetVerts, :).';
+    AproxDistance = Basis* ProjectedDistance * Basis.';
 
     Method = strcat('heatmap', string(FaceStep), '-', string(BasisStep));
     %save_geodesic('spot_mini', Method, ApproxDistance);
 
     % Drop the distance at the target vert, it won't work with relative
     % error
-    PinpointGroundTruthDistance = GroundTruthDistance(1:end ~= TargetVerts);
-    PinpointAproxDistance = ApproxDistance(1:end ~= TargetVerts);
+
+    PinpointGroundTruthDistance = GroundTruthDistance(TargetVert, 1:end ~= TargetVert);
+    PinpointAproxDistance = AproxDistance(TargetVert, 1:end ~= TargetVert);
     ErrorVec = abs((PinpointGroundTruthDistance - PinpointAproxDistance) ./ PinpointGroundTruthDistance);
     MeanError(FaceStep, BasisStep) = sum(ErrorVec) / size(Verts, 1);
   end
