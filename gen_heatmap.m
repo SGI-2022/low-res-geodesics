@@ -1,8 +1,8 @@
 
-NumFaceSteps = 10;
+NumFaceSteps = 5;
 FacesStepSize = 5;
 
-NumBasisSteps = 10;
+NumBasisSteps = 5;
 BasisStepSize = 5;
 
 % Load in mesh
@@ -42,8 +42,8 @@ for FaceStep = 1:NumFaceSteps
   end
 end
 
-save_error_matrix('spot_mini', Method, MeanError)
-h=heatmap(MeanError, 'ColorLimits', [0, 1.5])
-generate_heatmap('Error_Matrices/spot_mini_heatmap10-10.csv', 0, 1.5)
+save_error_matrix('spot_mini_2_', Method, MeanError)
+%h=heatmap(MeanError, 'ColorLimits', [0, 1])
+generate_heatmap('./Error_Matrices/spot_mini_2_heatmap5-5.csv', 0, 1.5)
 
 %imagesc(MeanError)

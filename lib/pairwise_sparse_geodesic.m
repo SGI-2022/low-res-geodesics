@@ -1,4 +1,4 @@
-function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVertSamples, NumFaceSamples)
+function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis,NumVertSamples, NumFaceSamples)
   % Computes the geodesic distance between all pairs of verticies, with 
   % geodesic paths not restricted to edges, and projected to a given 
   % orthonormal basis.
@@ -75,7 +75,12 @@ function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVe
       % for each face. Then we take the norm of that vector, and this is
       % the quantity we want to restict to be less than 1.
       DistGrad = (Gradient(GradientSamples, :) * Basis) * (ProjectedDistance * Basis(VertSamples, :).');
-      norms(reshape(DistGrad, NumFaceSamples, Dimension, NumVertSamples), 2, 2) <= 1
+      GradNorm=norms(reshape(DistGrad, NumFaceSamples, Dimension, NumVertSamples), 2, 2);
+      V=GradNorm(:);
+      samples= randperm(size(V,1), 100);
+      V_samples= V(samples);
+      V_samples<=1;
+
   cvx_end
 
 end
