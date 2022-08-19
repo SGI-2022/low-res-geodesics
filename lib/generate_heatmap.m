@@ -1,4 +1,4 @@
-function Heatmap = generate_heatmap()
-    tbl = readtable('saved.csv')
-    Heatmap = heatmap(tbl, 'Eigenvectors', 'Faces', 'ColorVariable','Error');
+function Heatmap = generate_heatmap(filename, min, max)
+    M=readmatrix(filename);
+    Heatmap = heatmap(M, 'ColorLimits',[min, max])
 end
