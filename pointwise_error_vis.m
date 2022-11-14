@@ -6,19 +6,18 @@
 % Swap forward axis
 Verts = [Verts(:,1), Verts(:,3), Verts(:,2)];
 
-NumVertSamples=50;
-NumEigenvectors=20;
+NumFaceSteps=100;
+NumVertSamples=100;
+NumEigenvectors=30;
 
 % Load the ground truth
-GroundTruthDistance = readmatrix('pairwise_distance.csv');
+GroundTruthDistance = readmatrix('spot_pairwise.csv');
 
 % Compute a basis on the mesh
 Basis = laplacian_eigenbasis(Verts, Faces, NumEigenvectors);
 
-ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVertSamples);
+ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, NumVertSamples, NumFaceSamples);
 Distance = Basis * ProjectedDistance * Basis.';
-
-save_geodesic('spot_josue', 'pairwise_projected', Distance);
 
 Error = abs(Distance - GroundTruthDistance);
 Error(1:1+size(Error,1):end) = 0;
