@@ -117,3 +117,5 @@ if __name__ == "__main__":
     distance = fast_geodesic(verts, faces, basis, num_vert_samples=100)
 
     print(distance)
+    
+

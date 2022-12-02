@@ -27,7 +27,7 @@ for FaceStep = 1:NumFaceSteps
     
     Basis = FullBasis(:, 1:BasisStep*BasisStepSize);
     ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis, 130, FaceStep * FacesStepSize);
-    AproxDistance = Basis* ProjectedDistance * Basis.';
+    ApproxDistance = Basis* ProjectedDistance * Basis.';
 
     Method = strcat('heatmap', string(FaceStep), '-', string(BasisStep));
     %save_geodesic('spot_mini', Method, ApproxDistance);
@@ -36,8 +36,8 @@ for FaceStep = 1:NumFaceSteps
     % error
 
     PinpointGroundTruthDistance = GroundTruthDistance(TargetVert, 1:end ~= TargetVert);
-    PinpointAproxDistance = AproxDistance(TargetVert, 1:end ~= TargetVert);
-    ErrorVec = abs((PinpointGroundTruthDistance - PinpointAproxDistance) ./ PinpointGroundTruthDistance);
+    PinpointApproxDistance = ApproxDistance(TargetVert, 1:end ~= TargetVert);
+    ErrorVec = abs((PinpointGroundTruthDistance - PinpointApproxDistance) ./ PinpointGroundTruthDistance);
     MeanError(FaceStep, BasisStep) = sum(ErrorVec) / size(Verts, 1);
   end
 end

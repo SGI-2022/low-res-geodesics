@@ -32,6 +32,8 @@ function ProjectedDistance = pairwise_sparse_geodesic(Verts, Faces, Basis,NumVer
   S = (Basis.' * OneVec) * (OneVec.' * Basis);
 
   cvx_begin
+    cvx_solver sdpt3
+    cvx_solver_settings('maxit', 50)
 
     variable ProjectedDistance(NumBasisVectors, NumBasisVectors) symmetric
     
